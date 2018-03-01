@@ -1,22 +1,28 @@
-Killing the Loud Annoying Debian Speaker, Permanently.
+# Killing the Loud Annoying Debian Speaker, Permanently.
 
 I had a humiliating end of the day when my Dell 7577 wouldn't stop beeping, even with sound muted. A few weeks of investigation (there are a lot of idiots in the Linux community) all covered with the deafening high-pitched beeps of the stupid speakers has finally lead me to this.
 
 I decided to permanently kill the speaker drivers.
+
+
+# How to Fix the Speaker Drivers
+
+1. Try using the often not-working suggested fixes on Google first
+2. Then, try my idea, you create a new user, and you change ownership of the drivers from root to newuser
+3. Downgrade the permissions for each driver file*.ko (find them with ```updatedb & locate pcspkr```)
+4. Downgrade the newuser permissions from 1000 to 9999
+5. Remember to deprive the new user of any root permissions or sudo capabilities
+
+That should effectively prevent the bell from ever occuring again. This should work with any Linux distro (Debian based) without SELinux.
+
+
+# Old Vulgarity Laden Notes
 
 After fruitless methods kept popping up no matter how many times I typed in Google
 
 ```
 googler 'how the fuck do I uninstall the motherfucking speakers in Debian -windows + -idiots -site:stackoverflow.com -site:books.google.com -site:microsoft.com'
 ```
-As well as a fair bit of
-
-```
-googler 'I am going to kick your fucking ass from here to gettysburg'
-```
-
-Only to be taken back by the results.
-
 
 [!]()
 
@@ -57,19 +63,14 @@ Since this involves me messing with the kernel and the drivers and could potenti
 
 And if this shit fucks up. I will come back even more irate. Meanwhile, you guys, go find the fuck that forced this perma-reinstall so I can punch his nerdy lights out. 
 
-I have many enemies in the Linux community, including a Lennart Poeterring and his stupid broke-assed PulseAudio sound drivers. 
-
-FYI he actually runs his website from his house in Germany. There is also a odd discovery I made years ago. He has a straight-pipe to GitHub. Like... a literal, oil-pipeline in a network. I do not know why because every he touches will wilter and rot-away from gassy code bloat. I even had a DDoS from a rental stresser fire right into that port. It is discoverable with nmap, go to his shitty website by Googling his name and type ```tsocks proxychains nmap --script=ssl-enum-ciphers <poeterring's crappy egotistical website> -p 1-10000```. Go use ncat on a couple of open HTTP Proxies first as the Tor method to generate SOCKS proxies has been deprecated (and yet people scan with the default settings thinking its gonna hide them). 
-
-Unless you verify with pcap with deep-packet-inspection to manually confirm it, it is not true.
-
 Also, go find the asshole who broke my Intel iwlwifi drivers so I can beat his ass too. Apparently these wifi issues have been lingering for decades, and if I had not learned of penetration testing wireless adapters, I would have a much more bitter look against Linux.
 
 For now, I need to get to fixing this shit using my method. 
 
 # The steps I will take to break the annoying speaker drivers.
 
-1. Method one, erase the speaker drivers by overwriting the files with zeroes AFTER a apt-get update && apt-get upgrade && apt-get dist upgrade.
+# Didnt work, Next One!
+XXXX1. Method one, erase the speaker drivers by overwriting the files with zeroes AFTER a apt-get update && apt-get upgrade && apt-get dist upgrade.
 
 The reason  why is that my discovery of the drivers location implies that its being updated with a new, crappier version from each kernel mini update. If you apt-get upgrade at any point from this you might end up reinstalling these annoying drivers.
 
@@ -100,7 +101,7 @@ And it has a full execution policy. Add that to our list
 ```
 /dev/input/by-path/platform-pcspkr-event-spkr
 
-lrwxrwxrwx 1 root root 9 Feb 28 00:34 /dev/input/by-path/platform-pcspkr-event-spkr -> ../event7
+lXrwxrwxrwx 1 root root 9 Feb 28 00:34 /dev/input/by-path/platform-pcspkr-event-spkr -> ../event7
 
 ```
 Add all four to another text file called pcspkr-shitlist.txt
@@ -121,8 +122,9 @@ We are taking away permissions from the emptied drivers (we totally hosed them b
 
 Now reboot your pc.
 
-# If that don't work...
+# Nope. Didnt work! So I deviced my own exploit aabusing root privileges to fix the issue. Down here. 
 
+Make a ROOT and keep the character barely even used
 Holy crap. It reanimated itself...
 
 ```
@@ -186,7 +188,7 @@ sh: echo: I/O error
 It even reset it's FUCKING VOLUME.
 
 
-Lets try another method. Lets try to change ownership of these cursed files to a underprivileged user.
+# FINAL WORKING TRY, DOWNGRADE THE OWNER OF THE BELLLets try another method. Lets try to change ownership of these cursed files to a underprivileged user.
 
 Make a user.
 
@@ -279,5 +281,14 @@ Then reboot. Hope nothing breaks.
 
 
 I mean Debian is a great OS with great stability, but I am considering ditching it in favor of Ubuntu if this beep shit persists.
+
+
+The Working Step.
+
+1. add anew user just to have it control the account. This will be the only thing ever.
+2. NO MORE PRIVILEGE UPGRADES We  actually are going to downgrade the fake user's erpmissoions, sok that either it will not be able to sudo to touch the bell or even participate in executing it, even though iti is his
+4. Now modify user uid to 9999 to make it impossible for him to sudo
+5. Chmod the files to 0400
+6. Restart
 
 
